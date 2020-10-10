@@ -31,7 +31,6 @@ app.get("/api/notes", function (req, res) {
 //Post route
 app.post("/api/notes", function (req, res) {
     const newNote = req.body;
-    console.log(notesDB.length);
     if (notesDB.length === 0) {
         newNote.id = 1;
         notesDB.push(newNote);
@@ -39,7 +38,12 @@ app.post("/api/notes", function (req, res) {
         newNote.id = Math.max.apply(Math, notesDB.map(function (note) { return note.id; })) + 1;
         notesDB.push(newNote);
     }
-    
+    fs.writeFileSync(path.join(__dirname, "/db/db.json"), JSON.stringify(notesDB));
+    return res.json(req.body);
+})
+//Delete route
+app.delete("/api/notes/:id", function (req, res) {
+    notesDB.splice(notesDB.findIndex(element => element.id == req.params.id), 1);
     fs.writeFileSync(path.join(__dirname, "/db/db.json"), JSON.stringify(notesDB));
     return res.json(req.body);
 })
@@ -49,6 +53,4 @@ app.listen(PORT, function () {
     console.log("App listening on PORT " + PORT);
 });
 
-
-  //post
   //delete
